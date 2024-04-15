@@ -1,0 +1,49 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Documentação da API de Usuários",
+        "description": "Esta é a documentação da API de Usuários, que permite acessar e manipular dados de usuários no sistema.",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/v1/users": {
+            "get": {
+                "tags": [
+                    "Usuários"
+                ],
+                "summary": "Obter lista de usuários",
+                "description": "Obtém a lista completa de usuários cadastrados no sistema.",
+                "operationId": "b343fe695d1beaa03b7deb8449dd1b7c",
+                "responses": {
+                    "200": {
+                        "description": "Operação bem sucedida",
+                        "headers": {
+                            "Content-Type": {
+                                "description": "Tipo de conteúdo da resposta",
+                                "schema": {
+                                    "type": "string",
+                                    "default": "application/json"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "app/Models/User"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    }
+}
