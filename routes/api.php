@@ -25,7 +25,9 @@ Route::prefix('/v1')->group(function () {
         Route::post('cadastrar', ['as' => 'api.v1.cursos.cadastrar', 'uses' => 'App\Http\Controllers\Api\CursoController@cadastrar'])
             // ->middleware('auth:sanctum')
         ;
-        Route::put('actualizar/{id}', ['as' => 'api.v1.cursos.actualizar', 'uses' => 'App\Http\Controllers\Api\CursoController@actualizar'])->middleware('auth:sanctum');
+        Route::put('actualizar/{id}', ['as' => 'api.v1.cursos.actualizar', 'uses' => 'App\Http\Controllers\Api\CursoController@actualizar'])
+        // ->middleware('auth:sanctum')
+        ;
         Route::get('eliminar/{id}', ['as' => 'api.v1.cursos.eliminar', 'uses' => 'App\Http\Controllers\Api\CursoController@eliminar'])->middleware('auth:sanctum');
         Route::get('por_criador/{id_user}', ['as' => 'api.v1.cursos.por_criador', 'uses' => 'App\Http\Controllers\Api\CursoController@por_criador'])->middleware('auth:sanctum');
         Route::get('por_avaliacao/{estado}', ['as' => 'api.v1.cursos.por_avaliacao', 'uses' => 'App\Http\Controllers\Api\CursoController@por_avaliacao'])
