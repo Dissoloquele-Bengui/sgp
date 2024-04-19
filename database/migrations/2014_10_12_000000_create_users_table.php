@@ -14,6 +14,10 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('vc_pnome');
+            $table->string('vc_nome_meio')->nullable();
+            $table->string('vc_unome');
+            $table->boolean('ativo')->nullable()->default(true);
             $table->string('telefone')->nullable();
             $table->string('perfil');
             $table->string('bi');

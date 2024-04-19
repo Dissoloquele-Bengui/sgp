@@ -26,7 +26,7 @@ class UserFactory extends Factory
             'email' => 'admin@gmail.com',
             'email_verified_at' => now(),
             'password' =>  Hash::make('12345678'),
-            'tipoUtilizador'=>'Administrador',
+            'perfil'=>'Administrador',
             'genero'=>'Masculino',
             'bi'=>'123456789IN046',
             'telefone'=>'924798682',
