@@ -10,8 +10,11 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+
+class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens;
     use HasFactory;
@@ -25,7 +28,19 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+
+       // ... outras partes do seu código ...
+
+    /**
+     * Get the identifier that will be stored in the subject claim of the JWT.
+     *
+     * @return mixed
+     */
     protected $fillable = [
+        'vc_pnome',
+        'vc_nome_meio',
+        'vc_unome',
+        'ativo',
         'name',
         'telefone',
         'genero',
@@ -36,6 +51,11 @@ class User extends Authenticatable
         'password',
         'profile_photo_path',
     ];
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -66,4 +86,14 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+     /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
 }

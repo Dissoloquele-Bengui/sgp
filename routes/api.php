@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,23 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+
+Route::middleware(['cors','api'])->group(function () {
+    // Route::get('/userss', [AuthController::class, 'index']);
+
+    /* START CORREÇÃO*/
+    Route:: /* middleware(['admin'])-> */prefix('/v1/users')->group(
+        function () {
+            Route::post('login', [AuthController::class,'login']);
+
+
+
+
+        }
+    );
+
+});
 Route::any('login-api', function () {
     return response()->json(['error' => 'Unsupported Media Type'], 415);
 })->name('login-api');
@@ -22,19 +40,22 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::prefix('/v1')->group(function () {
     Route::prefix('cursos')->group(function () {
         Route::get('', ['as' => 'api.v1.cursos', 'uses' => 'App\Http\Controllers\Api\CursoController@index']);
-        Route::post('cadastrar', ['as' => 'api.v1.cursos.cadastrar', 'uses' => 'App\Http\Controllers\Api\CursoController@cadastrar'])
+        Route::post('cadastrar', ['as' => 'api.v1.cursos.cadastrar', 'uses' => 'App\Http\Controllers\Api\CursoController@cadastrar']);
+        Route::get('ver/{id}', ['as' => 'api.v1.cursos.ver', 'uses' => 'App\Http\Controllers\Api\CursoController@ver']);
             // ->middleware('auth:sanctum')
         ;
         Route::put('actualizar/{id}', ['as' => 'api.v1.cursos.actualizar', 'uses' => 'App\Http\Controllers\Api\CursoController@actualizar'])
         // ->middleware('auth:sanctum')
         ;
-        Route::get('eliminar/{id}', ['as' => 'api.v1.cursos.eliminar', 'uses' => 'App\Http\Controllers\Api\CursoController@eliminar'])->middleware('auth:sanctum');
+
+        Route::delete('eliminar/{id}', ['as' => 'api.v1.cursos.eliminar', 'uses' => 'App\Http\Controllers\Api\CursoController@eliminar']);
+        // Route::delete('eliminar/{id}', ['as' => 'api.v1.cursos.eliminar', 'uses' => 'App\Http\Controllers\Api\CursoController@eliminar'])->middleware('auth:sanctum');
         Route::get('por_criador/{id_user}', ['as' => 'api.v1.cursos.por_criador', 'uses' => 'App\Http\Controllers\Api\CursoController@por_criador'])->middleware('auth:sanctum');
         Route::get('por_avaliacao/{estado}', ['as' => 'api.v1.cursos.por_avaliacao', 'uses' => 'App\Http\Controllers\Api\CursoController@por_avaliacao'])
         // ->middleware('auth:sanctum')
         ;
 
-    });
+    })->middleware('cors','api');;
     Route::prefix('topicos')->group(function () {
         Route::get('', ['as' => 'api.v1.topicos', 'uses' => 'App\Http\Controllers\Api\TopicoController@index']);
         Route::post('cadastrar', ['as' => 'api.v1.topicos.cadastrar', 'uses' => 'App\Http\Controllers\Api\TopicoController@cadastrar'])->middleware('auth:sanctum');
@@ -96,21 +117,22 @@ Route::prefix('/v1')->group(function () {
         Route::get('', ['as' => 'api.v1.users', 'uses' => 'App\Http\Controllers\Api\UserController@index'])
             // ->middleware('auth:sanctum')
         ;
-        Route::post('cadastrar', ['as' => 'api.v1.users.cadastrar', 'uses' => 'App\Http\Controllers\Api\UserController@cadastrar'])
+        Route::post('cadastrar', ['as' => 'api.v1.users.cadastrar', 'uses' => 'App\Http\Controllers\Api\UserController@cadastrar']);
+        Route::get('ver/{id}', ['as' => 'api.v1.users.ver', 'uses' => 'App\Http\Controllers\Api\UserController@ver'])
             // ->
             // middleware('auth:sanctum');
         ;
-        Route::put('actualizar/{id}', ['as' => 'api.v1.users.actualizar', 'uses' => 'App\Http\Controllers\Api\UserController@actualizar'])->middleware('auth:sanctum');
+        Route::put('actualizar/{id}', ['as' => 'api.v1.users.actualizar', 'uses' => 'App\Http\Controllers\Api\UserController@actualizar']);
         ;
-        Route::get('eliminar/{id}', ['as' => 'api.v1.users.eliminar', 'uses' => 'App\Http\Controllers\Api\UserController@eliminar'])->middleware('auth:sanctum');
+        Route::delete('eliminar/{id}', ['as' => 'api.v1.users.eliminar', 'uses' => 'App\Http\Controllers\Api\UserController@eliminar']);
         ;
         Route::get('por_formando/{id_user}', ['as' => 'api.v1.users.por_formando', 'uses' => 'App\Http\Controllers\Api\UserController@por_formando'])->middleware('auth:sanctum');
         ;
         Route::put('actualizar_password/{id_user}', ['as' => 'api.v1.users.actualizar_password', 'uses' => 'App\Http\Controllers\Api\UserController@actualizar_password'])->middleware('auth:sanctum');
         Route::put('recuperar_password/{id_user}', ['as' => 'api.v1.users.recuperar_password', 'uses' => 'App\Http\Controllers\Api\UserController@recuperar_password']);
-        Route::post('login', ['as' => 'api.v1.users.login', 'uses' => 'App\Http\Controllers\Api\AuthController@login']);
+        // Route::post('login', ['as' => 'api.v1.users.login', 'uses' => 'App\Http\Controllers\Api\AuthController@login']);
         Route::post('logout', ['as' => 'api.v1.users.logout', 'uses' => 'App\Http\Controllers\Api\AuthController@logout'])->middleware('auth:sanctum');
         ;
 
     });
-});
+})->middleware('cors','api');

@@ -37,7 +37,7 @@ class CursoController extends Controller
                 try {
                     // Obter todos os cursos
                     $cursos = cursos()->get();
-    
+
                     // Inicializar um array para armazenar os resultados
                     $resultados = [];
                     $registros = collect();
@@ -48,35 +48,35 @@ class CursoController extends Controller
                         $inscritos = inscricoes()
                             ->where('inscricaos.id_curso', $curso->id)
                             ->count();
-    
+
                         // Inicializar o total de estrelas preenchidas
                         $estrelas_preenchidas = 0;
-    
+
                         if ($inscritos > 0) {
                             // Obter os registros de feedback apenas para o curso atual
                             $registros = feedbacks()->where('feed_backs.id_curso', $curso->id)
                                 ->get();
-    
+
                             // Inicializar o contador de votos
                             $total_votos = 0;
                             // Total possível de estrelas (considerando o número de inscritos)
                             $total_estrelas = $inscritos * 5;
-    
+
                             // Contar o número total de votos
                             foreach ($registros as $registro) {
                                 $total_votos += intval($registro->feedback);
                             }
-    
+
                             // Calcular o percentual de votos
                             $percentual = ($total_votos / $total_estrelas) * 100;
-    
+
                             // Garantir que o percentual não ultrapasse 100%
                             $percentual = min($percentual, 100);
-    
+
                             // Calcular a quantidade de estrelas a ser preenchida
                             $estrelas_preenchidas = round(($percentual / 100) * 5);
                         }
-    
+
                         // Formatar o resultado
                         $resultado = [
                             'id' => $curso->id ?? null,
@@ -95,16 +95,16 @@ class CursoController extends Controller
                             'percentual' => $percentual ?? 0,
                             'estrelas_preenchidas' => $estrelas_preenchidas,
                         ];
-    
+
                         $total_votos = 0;
                         $inscritos = 0;
                         $percentual = 0;
                         $resultados[] = $resultado;
                     }
-    
+
                     // Ordenar os resultados pelo número de estrelas preenchidas em ordem decrescente
                     $resultados = collect($resultados)->sortByDesc('votos')->values()->all();
-    
+
                     // Retornar os dados com status de sucesso
                     return response()->json($resultados, 200);
                 } catch (\Exception $e) {
@@ -124,7 +124,7 @@ class CursoController extends Controller
             return response()->json(['message' => 'Erro ao recuperar curso.', 'error' => $e->getMessage()], 500);
         }
     }
-    
+
     public function cadastrar(Request $request)
     {
         try {
@@ -134,14 +134,14 @@ class CursoController extends Controller
                 'curso' => 'required',
                 'duracao' => 'required',
                 'descricao' => 'required',
-                'id_categoria_curso' => 'required',
-                'id_user' => 'required',
+                // 'id_categoria_curso' => 'required',
+                // 'id_user' => 'required',
             ], [
                 'curso.required' => 'O campo Curso é obrigatório.',
                 'duracao.required' => 'O campo Duração é obrigatório.',
                 'descricao.required' => 'O campo Descrição é obrigatório.',
-                'id_categoria_curso.required' => 'O campo Categoria do Curso é obrigatório.',
-                'id_user.required' => 'O campo ID do Usuário é obrigatório.',
+                // 'id_categoria_curso.required' => 'O campo Categoria do Curso é obrigatório.',
+                // 'id_user.required' => 'O campo ID do Usuário é obrigatório.',
             ]);
             if ($validador->fails()) {
                 return response()->json($validador->errors(), 422);
@@ -150,8 +150,10 @@ class CursoController extends Controller
                 'curso' => $request->curso,
                 'duracao' => $request->duracao,
                 'descricao' => $request->descricao,
-                'id_categoria_curso' => $request->id_categoria_curso,
-                'id_user' => $request->id_user
+                // 'id_categoria_curso' => $request->id_categoria_curso,
+                // 'id_user' => $request->id_user
+                'id_categoria_curso' =>1,
+                'id_user' =>1
             ]);
             if ($curso) {
                 return response()->json(['message' => 'Registro efectuado com sucesso.'], 201);
@@ -164,6 +166,18 @@ class CursoController extends Controller
         }
     }
 
+    public function ver($id)
+    {
+        $curso['data'] = Curso::where('id', $id)->first();
+
+        if (!$curso) {
+            return response()->json(['message' => 'Curso Não Encontrado'], 200);
+        }
+
+        // return new UserResource($user);
+        return response()->json($curso,200);
+    }
+
     public function actualizar(Request $request, $id)
     {
         try {
@@ -171,31 +185,37 @@ class CursoController extends Controller
                 'curso' => 'required',
                 'duracao' => 'required',
                 'descricao' => 'required',
-                'id_categoria_curso' => 'required',
-                'id_user' => 'required',
+                // 'id_categoria_curso' => 'required',
+                // 'id_user' => 'required',
             ], [
                 'curso.required' => 'O campo Curso é obrigatório.',
                 'duracao.required' => 'O campo Duração é obrigatório.',
                 'descricao.required' => 'O campo Descrição é obrigatório.',
-                'id_categoria_curso.required' => 'O campo Categoria do Curso é obrigatório.',
-                'id_user.required' => 'O campo ID do Usuário é obrigatório.',
+                // 'id_categoria_curso.required' => 'O campo Categoria do Curso é obrigatório.',
+                // 'id_user.required' => 'O campo ID do Usuário é obrigatório.',
             ]);
             if ($validador->fails()) {
                 return response()->json($validador->errors(), 422);
             }
-            $curso = Curso::find($id);
-
-            if ($curso) {
-                $curso->update([
-                    'curso' => $request->curso,
-                    'duracao' => $request->duracao,
-                    'descricao' => $request->descricao,
-                    'id_categoria_curso' => $request->id_categoria_curso,
-                    'id_user' => $request->id_user
-                ]);
-                return response()->json(['message' => 'Registro actualizado com sucesso.'], 201);
-            } else {
-                return response()->json(['message' => 'Actualização  não efectuada, registro não econtrado.'], 400);
+            $registro = Curso::find($id)->update([
+                'curso' => $request->curso,
+                'duracao' => $request->duracao,
+                'descricao' => $request->descricao,
+                'id_categoria_curso' => $request->id_categoria_curso,
+                'id_user' => $request->id_user
+            ]);;
+            if(!$registro){
+                return response()->json([
+                    'status' => 400,
+                    'message' => "Erro ao atualizar",
+                ], 400);
+                // return $this->error("Erro ao atualizar Usuario ",400);
+            }else{
+                return response()->json([
+                    'status' => 200,
+                    'message' => "Curso " .$request->curso." Atualizado com sucesso",
+                ], 200);
+                // return response()->json("Usuario ".$request->vc_pnome." ".$request->vc_unome." Atualizado com sucesso", 200);
             }
         } catch (\Exception $e) {
             // Se ocorrer uma exceção, retornar uma resposta de erro
@@ -217,12 +237,28 @@ class CursoController extends Controller
             return response()->json(['message' => 'Erro ao recuperar curso.', 'error' => $e->getMessage()], 500);
         }
     }
-    public function eliminar($id_curso)
+    public function eliminar2($id_curso)
     {
         try {
             $curso = Curso::find($id_curso);
             if ($curso) {
                 $curso->delete();
+                return response()->json(['message' => 'Registro  eliminado com sucesso.'], 200);
+            } else {
+                return response()->json(['message' => 'Registro  não encontrado.'], 400);
+            }
+        } catch (\Exception $e) {
+            // Se ocorrer uma exceção, retornar uma resposta de erro
+            return response()->json(['message' => 'Erro ao eliminar registro.', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function eliminar($id)
+    {
+        try {
+            $registro = Curso::find($id);
+            if ($registro) {
+                $registro->delete();
                 return response()->json(['message' => 'Registro  eliminado com sucesso.'], 200);
             } else {
                 return response()->json(['message' => 'Registro  não encontrado.'], 400);
