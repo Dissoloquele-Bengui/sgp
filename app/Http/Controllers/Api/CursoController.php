@@ -144,7 +144,10 @@ class CursoController extends Controller
                 // 'id_user.required' => 'O campo ID do Usuário é obrigatório.',
             ]);
             if ($validador->fails()) {
-                return response()->json($validador->errors(), 422);
+                return response()->json([
+                    'status' => 422,
+                    'message' => "Preencher os campos obrigatórios",
+                ],422);
             }
             $curso = Curso::create([
                 'curso' => $request->curso,
