@@ -99,9 +99,10 @@ Route::prefix('/v1')->group(function () {
     });
     Route::prefix('categoria_cursos')->group(function () {
         Route::get('', ['as' => 'api.v1.categoria_cursos', 'uses' => 'App\Http\Controllers\Api\CategoriaCursoController@index']);
+        Route::get('ver/{id}', ['as' => 'api.v1.categoria_cursos.ver', 'uses' => 'App\Http\Controllers\Api\CategoriaCursoController@ver']);
         Route::post('cadastrar', ['as' => 'api.v1.categoria_cursos.cadastrar', 'uses' => 'App\Http\Controllers\Api\CategoriaCursoController@cadastrar']);
         Route::put('actualizar/{id}', ['as' => 'api.v1.categoria_cursos.actualizar', 'uses' => 'App\Http\Controllers\Api\CategoriaCursoController@actualizar']);
-        Route::get('eliminar/{id}', ['as' => 'api.v1.categoria_cursos.eliminar', 'uses' => 'App\Http\Controllers\Api\CategoriaCursoController@eliminar']);
+        Route::delete('eliminar/{id}', ['as' => 'api.v1.categoria_cursos.eliminar', 'uses' => 'App\Http\Controllers\Api\CategoriaCursoController@eliminar']);
     })->middleware('auth:sanctum');
     Route::prefix('inscricoes')->group(function () {
         Route::get('', ['as' => 'api.v1.inscricoes', 'uses' => 'App\Http\Controllers\Api\InscricaoController@index']);

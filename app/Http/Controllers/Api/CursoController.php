@@ -206,7 +206,7 @@ class CursoController extends Controller
                 'descricao' => $request->descricao,
                 'id_categoria_curso' => $request->id_categoria_curso,
                 'id_user' => $request->id_user
-            ]);;
+            ]);
             if(!$registro){
                 return response()->json([
                     'status' => 400,
