@@ -12,11 +12,12 @@ class Curso extends Model
     use SoftDeletes;
 
     protected $fillable = [
-       
+
         'curso',
         'duracao',
         'descricao',
         'id_categoria_curso',
-        'id_user'
+        'id_user',
+        'vc_image'
     ];
 }

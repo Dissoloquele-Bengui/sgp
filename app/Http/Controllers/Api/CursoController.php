@@ -134,6 +134,8 @@ class CursoController extends Controller
                 'curso' => 'required',
                 'duracao' => 'required',
                 'descricao' => 'required',
+                // 'vc_image' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
+                // 'vc_image'=>'required',
                 // 'id_categoria_curso' => 'required',
                 // 'id_user' => 'required',
             ], [
@@ -149,10 +151,21 @@ class CursoController extends Controller
                     'message' => "Preencher os campos obrigatórios",
                 ],422);
             }
+
+            // $image_path = $request->file('vc_image')->store('cursos', 'public');
+
+            if ($request->hasFile('vc_image')) {
+                $image_path = $request->file('vc_image')->store('cursos', 'public');
+            } else {
+                $image_path = ''; // ou qualquer valor padrão que você deseje
+            }
+
             $curso = Curso::create([
                 'curso' => $request->curso,
                 'duracao' => $request->duracao,
                 'descricao' => $request->descricao,
+                'vc_image' => $image_path,
+                // 'vc_image' =>$request->vc_image,
                 // 'id_categoria_curso' => $request->id_categoria_curso,
                 // 'id_user' => $request->id_user
                 'id_categoria_curso' =>1,
@@ -188,6 +201,7 @@ class CursoController extends Controller
                 'curso' => 'required',
                 'duracao' => 'required',
                 'descricao' => 'required',
+                // 'vc_image' => 'required',
                 // 'id_categoria_curso' => 'required',
                 // 'id_user' => 'required',
             ], [
@@ -204,6 +218,7 @@ class CursoController extends Controller
                 'curso' => $request->curso,
                 'duracao' => $request->duracao,
                 'descricao' => $request->descricao,
+                 'vc_image' => $request->vc_image,
                 'id_categoria_curso' => $request->id_categoria_curso,
                 'id_user' => $request->id_user
             ]);
