@@ -200,7 +200,7 @@ class CursoController extends Controller
                 'id_user' =>1
             ]);
 
-            return new CursosResource($curso);
+            // return new CursosResource($curso);
             if ($curso) {
                 return response()->json(['message' => 'Registro efectuado com sucesso.'], 201);
             } else {
