@@ -37,25 +37,27 @@ Route::any('login-api', function () {
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
 Route::prefix('/v1')->group(function () {
     Route::prefix('cursos')->group(function () {
         Route::get('', ['as' => 'api.v1.cursos', 'uses' => 'App\Http\Controllers\Api\CursoController@index']);
-        Route::post('cadastrar', ['as' => 'api.v1.cursos.cadastrar', 'uses' => 'App\Http\Controllers\Api\CursoController@cadastrar']);
-        Route::get('ver/{id}', ['as' => 'api.v1.cursos.ver', 'uses' => 'App\Http\Controllers\Api\CursoController@ver']);
+        Route::post('cadastrar', ['as' => 'api.v1.cursos.cadastrar', 'uses' => 'App\Http\Controllers\Api\CursoController@store']);
+        Route::get('ver/{id}', ['as' => 'api.v1.cursos.ver', 'uses' => 'App\Http\Controllers\Api\CursoController@show']);
             // ->middleware('auth:sanctum')
         ;
-        Route::put('actualizar/{id}', ['as' => 'api.v1.cursos.actualizar', 'uses' => 'App\Http\Controllers\Api\CursoController@actualizar'])
+        Route::put('actualizar/{id}', ['as' => 'api.v1.cursos.actualizar', 'uses' => 'App\Http\Controllers\Api\CursoController@update']);
         // ->middleware('auth:sanctum')
         ;
 
-        Route::delete('eliminar/{id}', ['as' => 'api.v1.cursos.eliminar', 'uses' => 'App\Http\Controllers\Api\CursoController@eliminar']);
+        Route::delete('eliminar/{id}', ['as' => 'api.v1.cursos.eliminar', 'uses' => 'App\Http\Controllers\Api\CursoController@delete']);
         // Route::delete('eliminar/{id}', ['as' => 'api.v1.cursos.eliminar', 'uses' => 'App\Http\Controllers\Api\CursoController@eliminar'])->middleware('auth:sanctum');
         Route::get('por_criador/{id_user}', ['as' => 'api.v1.cursos.por_criador', 'uses' => 'App\Http\Controllers\Api\CursoController@por_criador'])->middleware('auth:sanctum');
         Route::get('por_avaliacao/{estado}', ['as' => 'api.v1.cursos.por_avaliacao', 'uses' => 'App\Http\Controllers\Api\CursoController@por_avaliacao'])
         // ->middleware('auth:sanctum')
         ;
 
-    })->middleware('cors','api');;
+    })->middleware('cors','api');
     Route::prefix('topicos')->group(function () {
         Route::get('', ['as' => 'api.v1.topicos', 'uses' => 'App\Http\Controllers\Api\TopicoController@index']);
         Route::post('cadastrar', ['as' => 'api.v1.topicos.cadastrar', 'uses' => 'App\Http\Controllers\Api\TopicoController@cadastrar'])->middleware('auth:sanctum');

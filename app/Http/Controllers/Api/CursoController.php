@@ -8,6 +8,8 @@ use App\Models\Curso;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 
+use App\Http\Resources\CursosResource;
+
 class CursoController extends Controller
 {
     //~
@@ -23,7 +25,10 @@ class CursoController extends Controller
                 return response()->json(['message' => 'Nenhum  curso encontrado.'], 200);
             }
             // Retornar os dados com status de sucesso
-            return response()->json($cursos, 200);
+             return response()->json($cursos, 200);
+             $data=CursosResource::collection($cursos);
+            //  return $data;
+            return $data;
         } catch (\Exception $e) {
             // Se ocorrer uma exceção, retornar uma resposta de erro
             return response()->json(['message' => 'Erro ao recuperar curso.', 'error' => $e->getMessage()], 500);
@@ -125,15 +130,35 @@ class CursoController extends Controller
         }
     }
 
-    public function cadastrar(Request $request)
+    public function store(Request $request)
     {
+
+        $data=$request;
+
+
+        $vc_image = $request->file('vc_image');
+        // dd($vc_image);
+
+        $duracao = $request->input('duracao');
+        $descricao = $request->input('descricao');
+
+        // dd($vc_image);
+
+        // dd($request->CUR);
+        // if ($request->hasFile('vc_image')) {
+        //    return  dd('api image');
+        //     $image_path = $request->file('vc_image')->store('cursos', 'public');
+        // } else {
+        //    return  dd('fora'.$request->file('vc_image'));
+        //     $image_path = ''; // ou qualquer valor padrão que você deseje
+        // }
         try {
             // return response()->json($request->all());
 
             $validador = Validator::make($request->all(), [
-                'curso' => 'required',
-                'duracao' => 'required',
-                'descricao' => 'required',
+                // 'curso' => 'required',
+                // 'duracao' => 'required',
+                // 'descricao' => 'required',
                 // 'vc_image' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
                 // 'vc_image'=>'required',
                 // 'id_categoria_curso' => 'required',
@@ -152,25 +177,30 @@ class CursoController extends Controller
                 ],422);
             }
 
-            // $image_path = $request->file('vc_image')->store('cursos', 'public');
-
-            if ($request->hasFile('vc_image')) {
-                $image_path = $request->file('vc_image')->store('cursos', 'public');
-            } else {
-                $image_path = ''; // ou qualquer valor padrão que você deseje
-            }
-
+            // $$file_data = upload_file($request, 'arquivo', 'arquivos/topicos'); = $request->file('vc_image')->store('cursos', 'public');
+            // $file_data = upload_file($request, 'vc_image', 'arquivos/cursos');
+            // dd('na apiiiii'.$file_data);
+            // if ($request->hasFile('vc_image')) {
+            //     dd('api image');
+            //     $image_path = $request->file('vc_image')->store('cursos', 'public');
+            // } else {
+            //     dd('fora'.$request->file('vc_image'));
+            //     $image_path = $request->vc_image; // ou qualquer valor padrão que você deseje
+            // }
+           $image= upload_file($request, 'vc_image', 'arquivos/cursos');
             $curso = Curso::create([
                 'curso' => $request->curso,
                 'duracao' => $request->duracao,
-                'descricao' => $request->descricao,
-                'vc_image' => $image_path,
+                // 'descricao' => $request->descricao,
+                'vc_image' => $image['url_absoluta'],
                 // 'vc_image' =>$request->vc_image,
                 // 'id_categoria_curso' => $request->id_categoria_curso,
                 // 'id_user' => $request->id_user
                 'id_categoria_curso' =>1,
                 'id_user' =>1
             ]);
+
+            return new CursosResource($curso);
             if ($curso) {
                 return response()->json(['message' => 'Registro efectuado com sucesso.'], 201);
             } else {
@@ -182,7 +212,7 @@ class CursoController extends Controller
         }
     }
 
-    public function ver($id)
+    public function show($id)
     {
         $curso['data'] = Curso::where('id', $id)->first();
 
@@ -194,7 +224,7 @@ class CursoController extends Controller
         return response()->json($curso,200);
     }
 
-    public function actualizar(Request $request, $id)
+    public function update(Request $request, $id)
     {
         try {
             $validador = Validator::make($request->all(), [
@@ -271,7 +301,7 @@ class CursoController extends Controller
         }
     }
 
-    public function eliminar($id)
+    public function delete($id)
     {
         try {
             $registro = Curso::find($id);

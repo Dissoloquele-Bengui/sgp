@@ -24,7 +24,7 @@ function slug_gerar()
 {
 
     $slug =
-        //  Keygen::numeric(2)->generate() . 
+        //  Keygen::numeric(2)->generate() .
         uniqid(date('HisYmd'));
     // . Keygen::numeric(4)->generate();
 
@@ -247,7 +247,7 @@ function texto_dividido($texto)
     $textoResumido = substr($textoCompleto, 0, 30);
     return [$textoCompleto, $textoResumido];
 }
-function upload_file($request, $input, $caminho)
+function upload_file2($request, $input, $caminho)
 {
     if (isset ($request[$input]) && $request[$input]->isValid()) {
 
@@ -297,13 +297,55 @@ function upload_file($request, $input, $caminho)
     }
 }
 
+function upload_file($request, $input, $caminho)
+{
+    if (isset($request[$input]) && $request[$input]->isValid()) {
+        // Verifica se o diretório de destino existe
+        if (!file_exists(public_path($caminho))) {
+            mkdir(public_path($caminho), 0777, true);
+        }
+
+        // Define um aleatório para o arquivo baseado no timestamps atual
+        $name = uniqid(date('HisYmd'));
+
+        // Recupera a extensão do arquivo
+        $extension = $request[$input]->extension();
+
+        // Define finalmente o nome
+        $nameFile = "{$name}.{$extension}";
+
+        // Faz o upload e verifica se foi bem-sucedido
+        $requestImage = $request[$input];
+        $upload = $requestImage->move(public_path($caminho), $nameFile);
+
+        // Se tiver funcionado o arquivo foi armazenado em public_path($caminho)/nomedinamicoarquivo.extensao
+        if ($upload) {
+            // Obtém o caminho absoluto do arquivo
+            $filePath = public_path("$caminho/$nameFile");
+
+            // Retorna os dados
+            return [
+                'caminho_arquivo' => $filePath,
+                'url_absoluta' => url("$caminho/$nameFile"),
+                'extensao' => $extension
+            ];
+        } else {
+            return -1; // Upload falhou
+        }
+    } else {
+        return null; // Nenhum arquivo enviado
+    }
+}
+
+
 
 function cursos()
 {
 
     $cursos = Curso::join('categoria_cursos', 'categoria_cursos.id', 'cursos.id_categoria_curso')
         ->join('users', 'users.id', 'cursos.id_user')
-        ->select('cursos.*', 'cursos.id_user', 'users.name as criador', 'categoria_cursos.categoria');
+        ->select('cursos.*', 'cursos.id_user', 'users.name as criador', 'categoria_cursos.categoria')
+        ->orderBy('id', 'desc');
     return $cursos;
 }
 function categorias_cursos()
