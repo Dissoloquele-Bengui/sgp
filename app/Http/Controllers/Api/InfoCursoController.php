@@ -50,7 +50,7 @@ class InfoCursoController extends Controller
 
                 'txt_text' => $request->txt_text,
                 'it_id_curso' => $request->it_id_curso,
-                'it_id_categoriaCurso' => $request->it_id_categoriaCurso
+                'it_id_categoriaInfo' => $request->it_id_categoriaInfo
 
 
             ]);
@@ -96,7 +96,7 @@ class InfoCursoController extends Controller
             $registro = InfoCurso::find($id)->update([
                 'txt_text' => $request->txt_text,
                 'it_id_curso' => $request->it_id_curso,
-                'it_id_categoriaCurso' => $request->it_id_categoriaCurso
+                'it_id_categoriaInfo' => $request->it_id_categoriaInfo
             ]);
             if(!$registro){
                 return response()->json([

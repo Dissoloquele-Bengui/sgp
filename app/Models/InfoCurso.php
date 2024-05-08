@@ -15,7 +15,7 @@ class InfoCurso extends Model
 
         'txt_text' ,
         'it_id_curso',
-        'it_id_categoriaCurso'
+        'it_id_categoriaInfo'
 
     ];
 }
