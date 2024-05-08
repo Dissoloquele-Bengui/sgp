@@ -19,7 +19,7 @@ class UsersTableSeeder extends Seeder
             'password' => Hash::make('password'),
         ]);
 
-        
+
          // Inserindo o usuário 2
          DB::table('users')->insert([
             'name' => 'Jane Smith',
@@ -38,31 +38,5 @@ class UsersTableSeeder extends Seeder
             'password' => Hash::make('password'),
         ]);
 
-        // Inserindo o usuário 4
-        DB::table('users')->insert([
-            'name' => 'Maria Garcia',
-            'telefone' => '999999999',
-            'perfil' => 'user',
-            'email' => 'maria@example.com',
-            'password' => Hash::make('password'),
-        ]);
-
-        // Inserindo o usuário 5
-        DB::table('users')->insert([
-            'name' => 'Daniel Brown',
-            'telefone' => '111111111',
-            'perfil' => 'user',
-            'email' => 'daniel@example.com',
-            'password' => Hash::make('password'),
-        ]);
-
-        // Inserindo o usuário 6
-        DB::table('users')->insert([
-            'name' => 'Emily Wilson',
-            'telefone' => '222222222',
-            'perfil' => 'user',
-            'email' => 'emily@example.com',
-            'password' => Hash::make('password'),
-        ]);
     }
 }
