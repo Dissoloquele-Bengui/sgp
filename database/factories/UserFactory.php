@@ -23,6 +23,8 @@ class UserFactory extends Factory
     {
         return [
             'name' => 'admin',
+            'vc_pnome'=>'Horácio',
+            'vc_unome'=>'Manuel',
             'email' => 'admin@gmail.com',
             'email_verified_at' => now(),
             'password' =>  Hash::make('12345678'),

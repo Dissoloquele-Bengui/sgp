@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('vc_pnome');
-            $table->string('vc_nome_meio')->nullable();
-            $table->string('vc_unome');
-            $table->boolean('ativo')->nullable()->default(true);
+            //$table->string('vc_pnome');
+            //$table->string('vc_nome_meio')->nullable();
+            //$table->string('vc_unome');
+            //$table->boolean('ativo')->nullable()->default(true);
         });
     }
 
