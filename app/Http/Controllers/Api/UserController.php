@@ -79,8 +79,22 @@ class UserController extends Controller
             //     'perfil' => $request->perfil,
             //     'password' => Hash::make($request->password)
             // ]);
+            $image= upload_file($request, 'vc_image', 'arquivos/users');
 
-            $user = user::create($validator->validated());
+            $user = user::create([
+                'vc_pnome' => $request->vc_pnome,
+                'vc_nome_meio' => $request->vc_nome_meio,
+                'vc_unome' => $request->vc_unome,
+                'name' => $request->name,
+                'telefone' => $request->telefone,
+                'genero' => $request->genero,
+                'perfil' => $request->perfil,
+                'bi' => $request->bi,
+                'email'=> $request->email,
+                'tipoUtilizador' => $request->tipoUtilizador,
+                'password'=> Hash::make($request->password),
+                'vc_image'=>$image
+            ]);
 
             // $caminho = upload_file($request, 'profile_photo_path', 'user/img');
             // dd( $request,  $caminho );
@@ -146,6 +160,7 @@ class UserController extends Controller
             $user = User::find($id);
 
 
+            $image= upload_file($request, 'vc_image', 'arquivos/users');
 
 
             $validated = $validator->validated();
@@ -154,6 +169,13 @@ class UserController extends Controller
                 "vc_pnome" => $validated["vc_pnome"],
                 "vc_nome_meio" => $validated["vc_nome_meio"],
                 "vc_unome" => $validated["vc_unome"],
+                'telefone' => $validated['telefone'],
+                'genero' => $validated['genero'],
+                'perfil' => $validated['perfil'],
+                'bi' => $validated['bi'],
+                'email'=> $validated['email'],
+                'tipoUtilizador' => $validated['tipoUtilizador'],
+
                 // "genero" => $validated["genero"],
                 // "ativo" => $validated["ativo"],
                 // "img" => $validated["img"],
@@ -164,7 +186,16 @@ class UserController extends Controller
             ]);
 
             // dd($registro);
-
+            if(isset($request->vc_image)){
+                $registro = user::find($id)->update([
+                    'vc_image'=>$image
+                ]);
+            }
+            if(isset($request->password)){
+                $registro = user::find($id)->update([
+                    'password'=> Hash::make($validated['password'])
+                ]);
+            }
             if(!$registro){
                 return response()->json([
                     'status' => 400,

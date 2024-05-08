@@ -1,6 +1,11 @@
 <?php
+
+use App\Models\Anexo;
 use App\Models\Arquivo;
+use App\Models\Aula;
+use App\Models\CategoriaAnexo;
 use App\Models\CategoriaCurso;
+use App\Models\CategoriaInfo;
 use App\Models\CategoriaTituloHabilitante;
 use App\Models\Federacao;
 use App\Models\FeedBack;
@@ -13,6 +18,7 @@ use App\Models\Operador;
 use App\Models\TituloHabilitante;
 use App\Models\CategoriaServico;
 use App\Models\Curso;
+use App\Models\Seccao;
 use App\Models\Topico;
 use App\Models\User;
 
@@ -385,6 +391,7 @@ function topicos()
         ->select('topicos.*', 'cursos.curso');
     return $topicos;
 }
+
 function arquivos()
 {
 
@@ -392,4 +399,34 @@ function arquivos()
         ->join('cursos', 'cursos.id', 'topicos.id_curso')
         ->select('arquivos.*', 'topicos.topico', 'topicos.numero', 'cursos.curso');
     return $arquivos;
+}
+
+function aulas(){
+    $aulas = Aula::join('cursos','cursos.id','aulas.it_id_curso')
+        ->leftJoin('seccaos', 'seccaos.id', 'aulas.it_id_seccao')
+        ->select('aulas.*', 'cursos.curso as curso ', 'seccaos.vc_title');
+    return $aulas;
+}
+
+function categoriaAnexos(){
+    $categorias = CategoriaAnexo::all();
+    return $categorias;
+}
+
+function anexos(){
+    $anexos = Anexo::join('cursos','cursos.id','anexos.it_id_curso')
+        ->leftJoin('categoria_anexos', 'categoria_anexos.id', 'anexos.it_id_categoriaAnexo')
+        ->select('anexos.*','categoria_anexos.vc_nome as categoria','cursos.curso as curso');
+    return $anexos;
+}
+
+function seccao(){
+    $seccaos = Seccao::join('cursos','cursos.id','seccaos.it_id_curso')
+        ->select('seccaos.*','cursos.curso as curso');
+    return $seccaos;
+}
+
+function categoriaInfos(){
+    $categorias = CategoriaInfo::all();
+    return $categorias;
 }

@@ -12,7 +12,6 @@ class Anexo extends Model
     use SoftDeletes;
 
     protected $fillable = [
-
         'vc_title',
         'txt_description' ,
         'vc_file',
