@@ -49,17 +49,11 @@ class AuthController extends Controller
 
         return response()->json([
             'token' => $user->createToken('auth_token')->plainTextToken,
-            'status' => '11',
-            'vc_pnome' => $user->vc_pnome,
-            'vc_nome_meio' => $user->vc_nome_meio,
-            'vc_unome' => $user->vc_unome,
             'img' => $user->img,
             'vc_userName' => $user->vc_userName,
-            'telefone' => $user->telefone,
-            'ativo' => $user->ativo,
             'email' => $user->email,
             'password' => $user->password,
-            'nivel_acesso' => $user->nivel_acesso
+            'tipo' => $user->nivel_acesso
         ]);
 
 

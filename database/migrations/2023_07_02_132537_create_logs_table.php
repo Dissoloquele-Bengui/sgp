@@ -15,7 +15,10 @@ class CreateLogsTable extends Migration
     {
         Schema::create('logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('it_id_user')->constrained('users')->onDelete('CASCADE')->onUpgrade('CASCADE');
+            $table->foreignId('it_id_user')
+            ->constrained('users')
+            ->onDelete('CASCADE')
+            ->onUpgrade('CASCADE');
             $table->longtext('vc_descricao');
             $table->string('vc_endereco');
             $table->string('vc_dispositivo');

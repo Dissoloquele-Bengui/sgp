@@ -36,18 +36,18 @@ Route::prefix('federacoes')->group(function () {
     Route::get('index', ['as' => 'site.federacoes.index', 'uses' => 'Site\FederacaoController@index']);
     Route::get('{id}/ver-mais', ['as' => 'site.federacoes.ver_mais', 'uses' => 'Site\FederacaoController@ver_mais']);
     // Route::get('sobre', ['as' => 'site.federacoes.sobre', 'uses' => 'Site\FederacaoController@sobre']);
-  
+
 });
 Route::prefix('registro')->group(function () {
     Route::post('passageiro', ['as' => 'site.register_passageiro.store_passageiro', 'uses' => 'Site\RegistroController@store_passageiro']);
     Route::post('motorista', ['as' => 'site.register_motorista.store_motorista', 'uses' => 'Site\RegistroController@store_motorista']);
-  
+
 });
 
 Route::prefix('labs')->group(function () {
     Route::get('', ['as' => 'admin.labs', 'uses' => 'Lab\LabController@index']);
     // Route::get('mru', ['as' => 'admin.labs.mru', 'uses' => 'Lab\LabController@mru']);
-    
+
 });
 Route::get('mru', ['as' => 'admin.labs.mru', 'uses' => 'Lab\LabController@mru']);
 Route::get('mruv', ['as' => 'admin.labs.mruv', 'uses' => 'Lab\LabController@mruv']);
