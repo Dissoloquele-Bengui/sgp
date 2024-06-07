@@ -4,6 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Decisao;
+use App\Models\Destinatario;
+use App\Models\Notificacao;
+use App\Models\Pedido;
+use App\Models\TipoPedido;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -30,7 +36,7 @@ class DecisaoController extends Controller
     public function cadastrar(Request $request)
     {
         try {
-
+            //return response($request);
             $validator = Validator::make($request->all(), [
 
                 "descricao" => "required",
@@ -48,11 +54,38 @@ class DecisaoController extends Controller
 
             }
             $decisao = Decisao::create([
-
                 'id_user' => $request->id_user,
                 'descricao' => $request->descricao,
                 'id_pedido' => $request->id_pedido,
             ]);
+            Pedido::find($request->id_pedido)->update([
+                'estado'=>$request->estado,
+            ]);
+
+            // Inicio de Envio de notificação
+
+            $pedido = Pedido::findOrFail($request->id_pedido);
+
+            $user = User::findOrfail($request->id_user);
+
+            $tipo = TipoPedido::findOrfail($pedido->id_tipo);
+
+            $destinatarios = usersDecisaoByTipoPedido($request->id_tipo);
+
+            $notificacao = Notificacao::create([
+                'titulo'=>"Notificação",
+                'descricao'=>"Viemos por esta informar que foi tomada uma decisão quanto ao seu pedido de descrição $pedido->descricao e agora ele possui o estado de $request->estado",
+                'data'=>Carbon::now(),
+                'id_categoria'=>3
+            ]);
+
+            //Enviando notificação aos usuários com permissao de tomarem uma ação quanto ao pedido
+            Destinatario::create([
+                'id_notificacao'=>$notificacao->id,
+                'id_user'=>$pedido->id_user,
+                'estado'=>0
+            ]);
+
 
             if ($decisao) {
                 $ultimoUsuario = Decisao::latest()->first();
@@ -73,12 +106,7 @@ class DecisaoController extends Controller
     public function actualizar(Request $request, $id)
     {
         try {
-            $decisaoFind = Decisao::where('email', $request->email)->first(); // obtém o ID do usuário autenticado
-            if (auth()->id()) {
-                $decisaoId = auth()->id();
-            } else {
-                $decisaoId = $decisaoFind->id;
-            }
+
             $validator = Validator::make($request->all(), [
                 'descricao' => 'required',
             ], [
@@ -97,7 +125,9 @@ class DecisaoController extends Controller
                 'descricao' => $request->descricao,
                 'id_pedido' => $request->id_pedido,
             ]);
-
+            Pedido::find($request->id_pedido)->update([
+                'estado'=>$request->estado,
+            ]);
             if(!$registro){
                 return response()->json([
                     'status' => 400,
@@ -119,10 +149,10 @@ class DecisaoController extends Controller
 
     public function ver($id)
     {
-        $decisao['data'] = Decisao::where('id', $id)->first();
+        $decisao['data'] = Decisao::where('id_pedido', $id)->first();
 
         if (!$decisao) {
-            return response()->json(['message' => 'Campo Não Encontrado'], 200);
+            return response()->json(['message' => 'Decisão Não Encontrada'], 200);
         }
 
         // return new DecisaoResource($decisao);

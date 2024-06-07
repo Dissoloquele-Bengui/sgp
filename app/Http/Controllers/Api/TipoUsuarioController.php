@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\TipoUsuario;
-use Dotenv\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class TipoUsuarioController extends Controller
 {
@@ -72,12 +72,8 @@ class TipoUsuarioController extends Controller
     public function actualizar(Request $request, $id)
     {
         try {
-            $userFind = TipoUsuario::where('email', $request->email)->first(); // obtém o ID do usuário autenticado
-            if (auth()->id()) {
-                $userId = auth()->id();
-            } else {
-                $userId = $userFind->id;
-            }
+            //$userFind = TipoUsuario::where('email', $request->email)->first(); // obtém o ID do usuário autenticado
+            /**/
             $validator = Validator::make($request->all(), [
                 'nome' => 'required',
             ], [

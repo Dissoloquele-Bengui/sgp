@@ -3,14 +3,20 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Destinatario;
+use App\Models\Notificacao;
 use App\Models\Parecer;
+use App\Models\Pedido;
+use App\Models\TipoPedido;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class ParecerController extends Controller
 {
 
-    public function index()
+    public function index($id)
     {
 
 
@@ -30,7 +36,6 @@ class ParecerController extends Controller
         try {
 
             $validator = Validator::make($request->all(), [
-
                 "descricao" => "required",
             ], [
                 'descricao.required' => 'A descricao é obrigatória.',
@@ -50,7 +55,30 @@ class ParecerController extends Controller
                 'descricao' => $request->descricao,
                 'id_pedido' => $request->id_pedido,
             ]);
+            //Inicio de Envio de notificaç]ao
+            $pedido = Pedido::findOrFail($request->id_pedido);
 
+            $user = User::findOrfail($request->id_user);
+
+            $tipo = TipoPedido::findOrfail($pedido->id_tipo);
+
+            $destinatarios = usersDecisaoByTipoPedido($request->id_tipo);
+
+            $notificacao = Notificacao::create([
+                'titulo'=>"Aviso",
+                'descricao'=>"O usuário de nome $user->name e id $user->id deu o seu parecer a um pedido do tipo $tipo->nome que está aguardando a vossa decisão",
+                'data'=>Carbon::now(),
+                'id_categoria'=>2
+            ]);
+
+            foreach ($destinatarios as $key => $value) {
+                //Enviando notificação aos usuarios com permissao de tomarem uma ação quanto ao pedido
+                Destinatario::create([
+                    'id_notificacao'=>$notificacao->id,
+                    'id_user'=>$key->id,
+                    'estado'=>0
+                ]);
+            }
             if ($parecer) {
                 $ultimoUsuario = Parecer::latest()->first();
 
@@ -61,8 +89,8 @@ class ParecerController extends Controller
             } else {
                 return response()->json(['message' => 'Registro  não efectuado.'], 400);
             }
-        } catch (\Exception $e) {
-            // Se ocorrer uma exceção, retornar uma resposta de erro
+        } catch (\Throwable $e) {
+            throw $e;
             return response()->json(['message' => 'Erro ao efectuar registro.', 'error' => $e->getMessage()], 500);
         }
     }
@@ -70,12 +98,7 @@ class ParecerController extends Controller
     public function actualizar(Request $request, $id)
     {
         try {
-            $parecerFind = Parecer::where('email', $request->email)->first(); // obtém o ID do usuário autenticado
-            if (auth()->id()) {
-                $parecerId = auth()->id();
-            } else {
-                $parecerId = $parecerFind->id;
-            }
+
             $validator = Validator::make($request->all(), [
                 'descricao' => 'required',
             ], [
@@ -94,6 +117,9 @@ class ParecerController extends Controller
                 'descricao' => $request->descricao,
                 'id_pedido' => $request->id_pedido,
             ]);
+            Pedido::find($request->id_pedido)->update([
+                'estado'=>"Aguardando Decisão",
+            ]);
 
             if(!$registro){
                 return response()->json([
@@ -107,7 +133,8 @@ class ParecerController extends Controller
                 ], 200);
             }
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            throw $e;
             // Se ocorrer uma exceção, retornar uma resposta de erro
             return response()->json(['message' => 'Erro ao efectuar actualizaçao.', 'error' => $e->getMessage()], 500);
         }
@@ -116,13 +143,15 @@ class ParecerController extends Controller
 
     public function ver($id)
     {
-        $parecer['data'] = Parecer::where('id', $id)->first();
+        $parecer = Parecer::join('users','users.id','parecers.id_user')
+            ->join('pedidos','pedidos.id','parecers.id_pedido')
+            ->select('parecers.*','users.name as user')
+            ->where('id_pedido', $id)->get();
 
         if (!$parecer) {
             return response()->json(['message' => 'Campo Não Encontrado'], 200);
         }
 
-        // return new ParecerResource($parecer);
         return response()->json($parecer,200);
     }
 

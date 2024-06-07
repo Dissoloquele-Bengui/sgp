@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -33,32 +34,17 @@ class UserController extends Controller
     public function cadastrar(Request $request)
     {
         try {
+            //dd(auth()->user());
 
             $validator = Validator::make($request->all(), [
-
-                "name" => "required",
-                "vc_pnome" => "required",
-                "vc_nome_meio" => "required",
-                "vc_unome" => "required",
-                // 'name' => 'required',
+                'name' => 'required',
                 // 'telefone' => 'required',
-                // 'genero' => 'required',
+                //'genero' => 'required',
                 // 'bi' => 'required|unique:users',
-                // 'email' => 'required|email|unique:users',
-                // 'perfil' => 'required',
-                // 'password' => 'required',
+                'email' => 'required|email|unique:users',
+                 'password' => 'required',
             ], [
                 'name.required' => 'O campo nome completo é obrigatório.',
-                'name.required' => 'O campo nome completo é obrigatório.',
-                'name.required' => 'O campo nome completo é obrigatório.',
-                // 'telefone.required' => 'O campo telefone é obrigatório.',
-                // 'genero.required' => 'O campo gênero é obrigatório.',
-                // 'bi.required' => 'O campo bi é obrigatório.',
-                // 'bi.unique' => 'Este número de bi já está em uso.',
-                // 'email.required' => 'O campo email é obrigatório.',
-                // 'email.email' => 'Por favor, insira um endereço de email válido.',
-                // 'email.unique' => 'Este email já está em uso.',
-                // 'perfil.required' => 'O campo perfil é obrigatório.'
             ]);
             if($validator->fails()){
 
@@ -82,18 +68,12 @@ class UserController extends Controller
             $image= upload_file($request, 'vc_image', 'arquivos/users');
 
             $user = user::create([
-                'vc_pnome' => $request->vc_pnome,
-                'vc_nome_meio' => $request->vc_nome_meio,
-                'vc_unome' => $request->vc_unome,
                 'name' => $request->name,
-                'telefone' => $request->telefone,
-                'genero' => $request->genero,
-                'perfil' => $request->perfil,
-                'bi' => $request->bi,
+              //  'genero' => $request->genero,
                 'email'=> $request->email,
-                'tipoUtilizador' => $request->tipoUtilizador,
+                'id_tipo' => $request->id_tipo,
                 'password'=> Hash::make($request->password),
-                'vc_image'=>$image
+                //'vc_image'=>$image
             ]);
 
             // $caminho = upload_file($request, 'profile_photo_path', 'user/img');
@@ -121,79 +101,36 @@ class UserController extends Controller
 
     public function actualizar(Request $request, $id)
     {
+       // dd($request);
         try {
             $userFind = User::where('email', $request->email)->first(); // obtém o ID do usuário autenticado
-            if (auth()->id()) {
-                $userId = auth()->id();
-            } else {
-                $userId = $userFind->id;
-            }
-            $validator = Validator::make($request->all(), [
+
+            /*$validator = Validator::make($request->all(), [
                 'name' => 'required',
-                "vc_pnome" => "required",
-                "vc_nome_meio" => "required",
-                "vc_unome" => "required",
-                // 'telefone' => 'required',
-                // 'genero' => 'required',
-                // 'bi' => 'required|unique:users,bi,' . $userId,
-                // 'email' => 'required|email|unique:users,email,' . $userId,
-                // 'perfil' => 'required',
 
             ], [
                 'name.required' => 'O campo nome completo é obrigatório.',
-                'name.required' => 'O campo nome completo é obrigatório.',
-                'name.required' => 'O campo nome completo é obrigatório.',
-                'name.required' => 'O campo nome completo é obrigatório.',
-
-                // 'telefone.required' => 'O campo telefone é obrigatório.',
-                // 'genero.required' => 'O campo gênero é obrigatório.',
-                // 'bi.required' => 'O campo bi é obrigatório.',
-                // 'bi.unique' => 'Este número de bi já está em uso.',
-                // 'email.required' => 'O campo email é obrigatório.',
-                // 'email.email' => 'Por favor, insira um endereço de email válido.',
-                // 'email.unique' => 'Este email já está em uso.',
-                // 'perfil.required' => 'O campo perfil é obrigatório.'
             ]);
             if ($validator->fails()) {
-                return response()->json($validador->errors(), 422);
-            }
+                return response()->json($validator->errors(), 422);
+
+            }*/
             $user = User::find($id);
 
 
-            $image= upload_file($request, 'vc_image', 'arquivos/users');
 
 
-            $validated = $validator->validated();
+            //$validated = $validator->validated();
             $registro = user::find($id)->update([
-                "name" => $validated["name"],
-                "vc_pnome" => $validated["vc_pnome"],
-                "vc_nome_meio" => $validated["vc_nome_meio"],
-                "vc_unome" => $validated["vc_unome"],
-                'telefone' => $validated['telefone'],
-                'genero' => $validated['genero'],
-                'perfil' => $validated['perfil'],
-                'bi' => $validated['bi'],
-                'email'=> $validated['email'],
-                'tipoUtilizador' => $validated['tipoUtilizador'],
+                'name' => $request->name,
+                'email'=> $request->email,
+                'id_tipo' => $request->id_tipo,
 
-                // "genero" => $validated["genero"],
-                // "ativo" => $validated["ativo"],
-                // "img" => $validated["img"],
-                // "nivel_acesso"=> $validated["nivel_acesso"],
-                // "password" => $validated["password"],
-                // "email" => $validated["email"],
-                // "telefone" => $validated["telefone"],
             ]);
 
-            // dd($registro);
-            if(isset($request->vc_image)){
-                $registro = user::find($id)->update([
-                    'vc_image'=>$image
-                ]);
-            }
             if(isset($request->password)){
                 $registro = user::find($id)->update([
-                    'password'=> Hash::make($validated['password'])
+                    'password'=> Hash::make($request->password)
                 ]);
             }
             if(!$registro){
@@ -205,26 +142,13 @@ class UserController extends Controller
             }else{
                 return response()->json([
                     'status' => 200,
-                    'message' => "Usuario " .$request->vc_pnome.' '.$request->vc_unome ." Atualizado com sucesso",
+                    'message' => "Usuario " .$request->name ." Atualizado com sucesso",
                 ], 200);
-                // return response()->json("Usuario ".$request->vc_pnome." ".$request->vc_unome." Atualizado com sucesso", 200);
             }
 
-            // if ($registro) {
-            //     $registro->update([
-            //         'name' => $request->name, // Supondo que o campo name seja usado para o nome do usuário
-            //         'telefone' => $request->telefone,
-            //         'genero' => $request->genero,
-            //         'bi' => $request->bi,
-            //         'email' => $request->email,
-            //         'perfil' => $request->perfil,
-            //     ]);
-            //     return response()->json(['message' => 'Registro actualizado com sucesso.'], 201);
-            // } else {
-            //     return response()->json(['message' => 'Actualização  não efectuada, registro não econtrado.'], 400);
-            // }
         } catch (\Exception $e) {
-            // Se ocorrer uma exceção, retornar uma resposta de erro
+            throw $e;
+            dd($th);
             return response()->json(['message' => 'Erro ao efectuar actualizaçao.', 'error' => $e->getMessage()], 500);
         }
     }

@@ -7,10 +7,10 @@ use App\Models\CampoPedido;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class CampoPedidoPedidoController extends Controller
+class CampoPedidoController extends Controller
 {
 
-    public function index()
+    public function index($id)
     {
 
 
@@ -18,7 +18,8 @@ class CampoPedidoPedidoController extends Controller
 
             $registros = CampoPedido::join('pedidos','pedidos.id','campo_pedidos.id_pedido')
                 ->join('campos','campos.id','campo_pedidos.id_campo')
-                ->select('campo_pedidos.*','campos.nome as campo','campos.formato as formato')
+                ->select('campo_pedidos.valor','campos.*')
+                ->where('pedidos.id',$id)
                 ->get();
             if ($registros->isEmpty()) {
                 return response()->json(['message' => 'Nenhum tipo de pedido encontrado.'], 200);

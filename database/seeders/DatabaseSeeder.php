@@ -12,7 +12,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\User::factory(1)->create();
+       // \App\Models\User::factory(1)->create();
+        \App\Models\CategoriaNotificacao::create([
+            'nome'=>"Solicitação de Analise ao pedido"
+        ]);
+        \App\Models\CategoriaNotificacao::create([
+            'nome'=>"Solicitação de tomada de decisão "
+        ]);
+        \App\Models\CategoriaNotificacao::create([
+            'nome'=>"Resposta ao Pedido"
+        ]);
 
         // \App\Models\User::factory()->create([
         //     'name' => 'Test User',

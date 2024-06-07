@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Campo;
 use App\Models\TipoPedido;
-use Dotenv\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class TipoPedidoController extends Controller
 {
@@ -33,6 +34,8 @@ class TipoPedidoController extends Controller
     {
         try {
 
+
+            //dd($request);
             $validator = Validator::make($request->all(), [
 
                 "nome" => "required",
@@ -49,11 +52,18 @@ class TipoPedidoController extends Controller
 
 
             }
-            $user = TipoPedido::create([
+            $tipoPedido = TipoPedido::create([
                 'nome' => $request->nome,
             ]);
-
-            if ($user) {
+            foreach($request->fields as $index=>$field){
+                //dd($field['nome_campo']);
+                Campo::create([
+                    'nome' => $field['nome_campo'],
+                    'id_tipo_pedido' => $tipoPedido->id,
+                    'formato' => $field['formato'],
+                ]);
+            }
+            if ($tipoPedido) {
                 $ultimoPedido = TipoPedido::latest()->first();
 
                 return response()->json([
@@ -72,12 +82,7 @@ class TipoPedidoController extends Controller
     public function actualizar(Request $request, $id)
     {
         try {
-            $userFind = TipoPedido::where('email', $request->email)->first(); // obtém o ID do usuário autenticado
-            if (auth()->id()) {
-                $userId = auth()->id();
-            } else {
-                $userId = $userFind->id;
-            }
+
             $validator = Validator::make($request->all(), [
                 'nome' => 'required',
             ], [
@@ -94,7 +99,15 @@ class TipoPedidoController extends Controller
             $registro = TipoPedido::find($id)->update([
                 "nome" => $validated["nome"],
             ]);
-
+            Campo::where('id_tipo_pedido',$id)->delete();
+            foreach($request->fields as $index=>$field){
+                //dd($field['nome_campo']);
+                Campo::create([
+                    'nome' => $field['nome_campo'],
+                    'id_tipo_pedido' => $id,
+                    'formato' => $field['formato'],
+                ]);
+            }
             if(!$registro){
                 return response()->json([
                     'status' => 400,
@@ -108,7 +121,8 @@ class TipoPedidoController extends Controller
                 // return response()->json("Tipo de Pedido ".$request->vc_pnome." ".$request->vc_unome." Atualizado com sucesso", 200);
             }
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            throw $e;
             // Se ocorrer uma exceção, retornar uma resposta de erro
             return response()->json(['message' => 'Erro ao efectuar actualizaçao.', 'error' => $e->getMessage()], 500);
         }
@@ -117,7 +131,7 @@ class TipoPedidoController extends Controller
 
     public function ver($id)
     {
-        $user['data'] = TipoPedido::where('id', $id)->first();
+        $user = TipoPedido::where('id', $id)->first();
 
         if (!$user) {
             return response()->json(['message' => 'Usuário Não Encontrado'], 200);

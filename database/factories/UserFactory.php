@@ -23,15 +23,10 @@ class UserFactory extends Factory
     {
         return [
             'name' => 'admin',
-            'vc_pnome'=>'Horácio',
-            'vc_unome'=>'Manuel',
             'email' => 'admin@gmail.com',
             'email_verified_at' => now(),
             'password' =>  Hash::make('12345678'),
-            'perfil'=>'Administrador',
-            'genero'=>'Masculino',
-            'bi'=>'123456789IN046',
-            'telefone'=>'924798682',
+            'id_tipo'=>1,
             'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
             'remember_token' => Str::random(10),

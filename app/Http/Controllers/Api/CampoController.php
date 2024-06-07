@@ -12,14 +12,15 @@ class CampoController extends Controller
     //
     //~
 
-    public function index()
+    public function index($id)
     {
 
 
         try {
 
             $registros = Campo::join('tipo_pedidos','tipo_pedidos.id','campos.id_tipo_pedido')
-                ->select('campos.*','tipo_pedidos.nome as tipo_pedido')
+                ->select('campos.*')
+                ->where('campos.id_tipo_pedido',$id)
                 ->get();
             if ($registros->isEmpty()) {
                 return response()->json(['message' => 'Nenhum tipo de pedido encontrado.'], 200);

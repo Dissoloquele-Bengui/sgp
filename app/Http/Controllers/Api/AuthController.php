@@ -33,7 +33,6 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function login(Request $request)
-
     {
         $credentials = $request->only('email', 'password');
         try {
@@ -50,10 +49,11 @@ class AuthController extends Controller
         return response()->json([
             'token' => $user->createToken('auth_token')->plainTextToken,
             'img' => $user->img,
+            'id'=>$user->id,
             'vc_userName' => $user->vc_userName,
             'email' => $user->email,
             'password' => $user->password,
-            'tipo' => $user->nivel_acesso
+            'id_tipo' => $user->id_tipo
         ]);
 
 

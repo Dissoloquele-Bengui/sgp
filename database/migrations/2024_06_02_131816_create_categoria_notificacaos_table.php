@@ -11,13 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::dropIfExists('permissaos');
-        Schema::create('permissaos', function (Blueprint $table) {
+        Schema::create('categoria_notificacaos', function (Blueprint $table) {
             $table->id();
-            $table->string('tipo');
-            $table->unsignedBigInteger('id_tipo_user');
-            $table->unsignedBigInteger('id_tipo_pedido');
-            $table->softDeletes();
+            $table->string('nome');
             $table->timestamps();
         });
     }
@@ -27,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('permissaos');
+        Schema::dropIfExists('categoria_notificacaos');
     }
 };

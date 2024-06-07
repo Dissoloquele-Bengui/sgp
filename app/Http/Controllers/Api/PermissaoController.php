@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Permissao;
 use Dotenv\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator as FacadesValidator;
 use Illuminate\Validation\Validator as ValidationValidator;
 
 class PermissaoController extends Controller
@@ -16,7 +17,7 @@ class PermissaoController extends Controller
 
 
         try {
-            $registros = Permissao::join('tipo_usuarios','tipo_usuarios.id','permissaos.id_tipo_usuario')
+            $registros = Permissao::join('tipo_usuarios','tipo_usuarios.id','permissaos.id_tipo_user')
                 ->join('tipo_pedidos','tipo_pedidos.id','permissaos.id_tipo_pedido')
                 ->select('permissaos.*','tipo_pedidos.nome as tipo_pedido','tipo_usuarios.nome as tipo_usuario')
                 ->get();
@@ -33,7 +34,7 @@ class PermissaoController extends Controller
     {
         try {
 
-            $validator = Validator::make($request->all(), [
+            $validator = FacadesValidator::make($request->all(), [
 
                 "tipo" => "required",
             ], [
@@ -50,7 +51,7 @@ class PermissaoController extends Controller
 
             }
             $parecer = Permissao::create([
-                'id_tipo_user' => $request->id_tipo_user,
+                'id_tipo_user' => $request->id_tipo_usuario,
                 'tipo' => $request->tipo,
                 'id_tipo_pedido' => $request->id_tipo_pedido,
             ]);
@@ -65,7 +66,9 @@ class PermissaoController extends Controller
             } else {
                 return response()->json(['message' => 'Registro  não efectuado.'], 400);
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            throw $e;
+            return response()->json($e);
             // Se ocorrer uma exceção, retornar uma resposta de erro
             return response()->json(['message' => 'Erro ao efectuar registro.', 'error' => $e->getMessage()], 500);
         }
@@ -117,7 +120,27 @@ class PermissaoController extends Controller
         }
     }
 
-
+    public function isPermitParecer($id, $id_tipo_pedido){
+        $id = intval($id);
+        $id_tipo_pedido = intval($id_tipo_pedido);
+        return Permissao::where('id_tipo_user',$id)
+            ->where('id_tipo_pedido',$id_tipo_pedido)
+            ->where('tipo',"Parecer")
+            ->count();
+    }
+    public function isPermitDecisao($id, $id_tipo_pedido){
+        $id = intval($id);
+        $id_tipo_pedido = intval($id_tipo_pedido);
+        return Permissao::where('id_tipo_user',$id)
+            ->where('id_tipo_pedido',$id_tipo_pedido)
+            ->where('tipo',"Decisão")
+            ->count();
+    }
+    public function isPermit($id, $id_tipo_pedido){
+        return Permissao::where('id_tipo_user',$id)
+            ->where('id_tipo_pedido',$id_tipo_pedido)
+            ->count();
+    }
     public function ver($id)
     {
         $parecer['data'] = Permissao::where('id', $id)->first();
